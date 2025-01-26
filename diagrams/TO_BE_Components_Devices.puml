@@ -1,0 +1,30 @@
+@startuml
+title "Теплый Дом" Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+Container(gateway, "Gateway")
+System(remoteDevice, "External user devices", "Smart devices that installed in users' home")
+
+Container_Boundary(devices, "Микросервис Devices (Устройства)") {
+  Component(deviceController, "DevicesController", "Java", "Управляет запросами")
+  Component(converter, "Converter", "Java", "Служит для конвертации во внетренние модели + парсер сценария")
+  Component(deviceService, "DevicesService", "Java", "Служит для выполнения бизнес-логики")
+  Component(remoteDevicesService, "RemoteDevicesService", "Java", "Отправка команд устройствам")
+  Component(deviceDao, "DeviceDao", "Java")
+  Component(scenarioDao, "ScenarioDao", "Java")
+}
+
+
+Rel(gateway, deviceController, "Обработать запрос")
+Rel(deviceController, converter, "Преобразовать запрос")
+Rel(deviceController, deviceService, "Выполнить запрос")
+Rel(deviceService, deviceDao, "Операция чтении/записи")
+Rel(deviceService, scenarioDao, "Операция чтении/записи")
+Rel(deviceService, remoteDevicesService, "Поменять состояние устройства")
+Rel(remoteDevicesService, remoteDevice, "Поменять состояние устройства")
+
+@enduml

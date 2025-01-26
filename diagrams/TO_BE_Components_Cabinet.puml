@@ -1,0 +1,26 @@
+@startuml
+title "Теплый Дом" Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+Container(gateway, "Gateway")
+Container(payment, "Payment")
+Container(devices, "Devices")
+
+Container_Boundary(cabinet, "Микросервис Cabinet (Личный кабинет)") {
+  Component(cabinetController, "CabinetController", "Java", "Управляет запросами")
+  Component(cabinetService, "CabinetService", "Java", "Служит для выполнения бизнес-логики")
+  Component(clientsDao, "ClientsDao", "Java")
+}
+
+
+Rel(gateway, cabinetController, "Обработать запрос")
+Rel(cabinetController, cabinetService, "Выполнить запрос")
+Rel(cabinetService, clientsDao, "Операция чтении информации о клиентах")
+Rel(cabinetService, devices, "Информация о всех устройствах клиента")
+Rel(cabinetService, payment, "Операция оплаты")
+
+@enduml
