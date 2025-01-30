@@ -1,0 +1,27 @@
+@startuml
+title "Теплый Дом" Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+Container(gateway, "Gateway")
+Container(cabinet, "Cabinet")
+Container(kafka, "Kafka")
+
+Container_Boundary(billing, "Микросервис Billing (Биллинг)") {
+  Component(billingController, "BillingController", "Java", "Управляет запросами")
+  Component(billingService, "BillingService", "Java", "Служит для выполнения бизнес-логики")
+  Component(telemetryDao, "TelemetryDao", "Java")
+}
+
+
+Rel(gateway, billingController, "Обработать запрос")
+Rel(billingController, billingService, "Выполнить запрос")
+Rel(billingService, telemetryDao, "Операция чтении телеметрии устройства  за период")
+Rel(cabinet, billingService, "Получение информации о всех пользователях и их устройствах")
+Rel(billingService, cabinet, "Выставить счет")
+Rel(billingService, kafka, "Отправить сообщение о счете клиентам")
+
+@enduml

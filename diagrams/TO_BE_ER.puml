@@ -1,0 +1,74 @@
+@startuml
+title "Теплый Дом" ER Diagram
+
+top to bottom direction
+
+entity Client {
+  * id : number
+  --
+  * house_id : FK number
+  * name: varchar
+  * email : varchar
+  * password : varchar
+  * balance: number
+  * invoice_id: number
+  removed: date
+}
+
+entity House {
+  * id : number
+  --
+  * user_id : number
+  * address: varchar
+  * device_ids: FK number
+  scenario_id: number
+  removed: date
+}
+
+entity Scenario {
+  * id : number
+  --
+  * operations: json
+  * status: boolean
+  removed: date
+}
+
+entity Device {
+  * id : number
+  --
+  * client_id: number
+  * device_type: varchar
+  * serial_number: varchar
+  * params: json
+  * status: boolean
+  * ip_address: varchar
+  removed: date
+}
+
+entity BillingInvoice {
+  * id : number
+  --
+  * client_id: varchar
+  * from: date
+  * to: date
+  * status: boolean
+}
+
+entity TelemetryMessage {
+  * from: date
+  * message_type: varchar
+  * device_id: number
+  * params: json
+}
+
+
+
+Client "1" -- "0..*" House
+Device "1..*" -- "1" Client
+Client "1" -- "0..1" BillingInvoice
+House  "1" -- "0..*" Device
+House  "1" -- "0..1" Scenario
+
+
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+title "Теплый Дом" Component Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+Container(gateway, "Gateway")
+Container(devices, "Devices")
+
+Container_Boundary(telemetry, "Микросервис Telemetry (Мониторинг)") {
+  Component(telemetryController, "TelemetryController", "Java", "Управляет запросами")
+  Component(telemetryService, "TelemetryService", "Java", "Служит для выполнения бизнес-логики")
+  Component(telemetryDao, "TelemetryDao", "Java")
+}
+
+
+Rel(gateway, telemetryController, "Обработать запрос")
+Rel(telemetryController, telemetryService, "Выполнить запрос")
+Rel(telemetryService, telemetryDao, "Операция чтении телеметрии устройства  за период")
+Rel(telemetryService, devices, "Получение информации об устройстве")
+
+@enduml

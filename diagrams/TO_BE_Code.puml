@@ -1,0 +1,41 @@
+@startuml
+title "Теплый Дом" Class Diagram
+
+!include <C4/C4_Container>
+
+interface DevicesService {
+  +List<Device> getDevices(Long: clientId)
+  +List<Scenario> getActiveScenario()
+  +void saveScenario(Scenario: scenario)
+  +void saveDevice(Device: device)
+  +void removeScenario(Long: scenarioId)
+  +void removeDevice(Long: deviceId
+  +Optional<Device> getDevice(Long: deviceId)
+  +void changeDeviceParams(Device: device)
+  +void updateDevice(Long: deviceId, params: Map<String, Object>)
+}
+
+class Scenario {
+  + id : Long
+  + operations: Json
+  + status: Boolean
+  removed: Optinal<DateTime>
+}
+
+class Device {
+  + id : Long
+  + deviceType: DeviceType
+  + serial_number: String
+  + params: Map<String, Object>
+  + status: Boolean
+  + ipAddress: String
+  removed: Optinal<DateTime>
+}
+
+enum DeviceType {
+  HEATING,
+  LIGHT,
+  DOORS
+}
+
+@enduml

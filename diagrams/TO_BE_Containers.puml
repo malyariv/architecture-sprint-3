@@ -1,0 +1,83 @@
+@startuml
+
+title "Теплый Дом" Containers Diagram
+
+top to bottom direction
+
+!include <C4/C4_Container>
+
+skinparam actorStyle Hollow
+: Клиент : as client
+: Сотрудник : as admin
+
+System(mobileApp, "Мобильное приложение")
+System(webApp, "Web-приложение")
+System(bank, "Система оплаты")
+System(remoteDevice, "Устройства")
+System(camera, "Камеры")
+
+
+System_Boundary(app, "Приложение") {
+  Container(gateway, "Gateway", "Kong", "API")
+  Container(auth, "Autherazation", "Java", "Авторизация")
+  database clientDb
+  Container(video, "Видеонаблюдение", "Java", "Видеонаблюдение")
+  database videoDb
+  Container(devices, "Устройства", "Java", "Управление устройствами и создание сценариев")
+  database devicesDb
+  Container(telemetry, "Мониторинг", "Java", "Отображение данных с различных устройств (телеметрия)")
+  Container(telemetryConsumer, "Консьюмер", "Java", "Вычитывает данные телеметрии из Кафки и записывает их в БД")
+  database telemetryDb
+  Container(billing, "Биллинг", "Java", "Сервис для выставления счета за использование системы Теплый дом на основании полученной телеметрии")
+  Container(scenarioJob, "Джоба для запуска сценариев", "Java", "Запускается по крону")
+  Container(cabinet, "Личный кабинет", "Java", "Управление подпиской, баланс")
+  Container(payment, "Проведение платежей", "Java", "Работа с посторонними сервисами для проведения оплаты")
+  Container(kafka, "Кафка", "Java", "Брокер сообщений")
+  Container(sender, "Сервис для отправки сообщений", "Java", "Отправка пушей и имейлов")
+}
+
+Rel(client, webApp, "Управление аккаунтом, устройствами и др.")
+Rel(client, mobileApp, "Управление аккаунтом, устройствами и др.")
+Rel(admin, webApp,  "Получение служебной информации")
+Rel(admin, mobileApp,  "Получение служебной информации")
+
+Rel(webApp, gateway,  "Получение служебной информации")
+Rel(mobileApp, gateway,  "Получение служебной информации")
+
+Rel(gateway, auth, "Авторизация")
+Rel(auth, clientDb, "Поиск клиента и его ролей")
+
+Rel(gateway, video, "Получение видеопотока пользователем")
+Rel(video, videoDb, "Получение данных")
+
+Rel(gateway, devices, "Команда на изменение состояния устройства")
+Rel(devices, devicesDb, "Сохранение/редактирование информации об устройстве или сценарии")
+Rel(devicesDb, devices, "Информация об устройстве или сценарии")
+
+Rel(gateway, telemetry, "Получение телеметрии пользователем")
+Rel(telemetry, telemetryDb, "Получение данных")
+
+Rel(telemetryConsumer, telemetryDb, "Сохранение телеметрии")
+Rel(kafka, telemetryConsumer, "Вычитывание сообщений с телеметрией")
+Rel(gateway, billing, "Запрос на формирование счета")
+Rel(billing, telemetryDb, "Получение данных о телеметрии")
+
+Rel(scenarioJob, devices, "Запуск сценариев")
+Rel(devices, scenarioJob, "Отправка сценариев")
+
+Rel(gateway, cabinet, "Отображени данных клиента")
+Rel(cabinet, clientDb, "Получение данных о клиенте")
+Rel(billing, cabinet, "Счет за подписку")
+Rel(cabinet, payment, "Оплата подписки")
+Rel(payment, bank, "Проведение транзакции по оплате")
+Rel(payment, kafka, "Отправка чека пользователю")
+
+Rel(kafka, sender, "Вычитывает сообщения от сервисов платежей")
+Rel(sender, client, "Отправка чека")
+Rel(sender, admin, "Отправка чека")
+
+Rel(devices, remoteDevice, "Управление устройством")
+Rel(remoteDevice, kafka, "Отправка телеметрии")
+Rel(camera, videoDb, "Отправка видеопотока")
+
+@enduml
