@@ -64,7 +64,7 @@ entity TelemetryMessage {
 
 
 Client "1" -- "0..*" House
-Device "1" -- "1" Client
+Device "1..*" -- "1" Client
 Client "1" -- "0..1" BillingInvoice
 House  "1" -- "0..*" Device
 House  "1" -- "0..1" Scenario
